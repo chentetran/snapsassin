@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Snapsassin</string>
     <!-- Login -->
-    <string name="client_id">259146958304-oeapc4kdnuob34fopk509el8ocqbuasm.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">185190855257569</string>
 </resources>

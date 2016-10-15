@@ -28,9 +28,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.google.firebase:firebase-core:9.6.1' // firebase
-    compile 'com.google.firebase:firebase-auth:9.6.1' // firebase authentication
     compile 'com.google.android.gms:play-services-auth:9.6.1' // google play auth
     compile 'com.google.firebase:firebase-database:9.6.1' // database
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)' // fb auth
+
 }
 
 apply plugin: 'com.google.gms.google-services' // firebase
