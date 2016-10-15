@@ -42,10 +42,6 @@
 
             </ListView>
 
-            <com.facebook.login.widget.LoginButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
 
             <RelativeLayout
                 android:id="@+id/noGamesFoundPanel"

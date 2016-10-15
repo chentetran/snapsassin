@@ -21,6 +21,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.games.Game;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -31,13 +41,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
     private String key;
@@ -238,10 +255,11 @@ public class GameActivity extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     // todo: upload to microsoft face
-//                    Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
                     // TODO: store in games
 
-                    assassinationSuccessful();
+                    attemptAssassination(downloadUrl.toString());
+
 
 
 
@@ -250,13 +268,166 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    public void dispatchTakePictureIntent(View view) {
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//        }
-        assassinationSuccessful();
+    private void attemptAssassination(String url) {
+        final String mUrl = url;
+        final Context context = this;
 
+        database.getReference("Users/" + targetID + "/personId").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String targetPersonId = dataSnapshot.getValue().toString();
+                Toast.makeText(GameActivity.this, targetPersonId, Toast.LENGTH_SHORT).show();
+
+                JsonObject json = new JsonObject();
+                json.addProperty("url", mUrl);
+
+                Ion.with(context)
+                        .load(getResources().getString(R.string.detect_face_url))
+                        .setHeader(getResources().getString(R.string.sub_id_key),
+                                getResources().getString(R.string.sub_id))
+                        .setJsonObjectBody(json)
+                        .asJsonArray()
+                        .setCallback(new FutureCallback<JsonArray>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonArray result) {
+                                if (e != null) {
+                                    // TODO:
+                                    return;
+                                }
+
+                                if (result.get(0) == null) {
+                                    Toast.makeText(context, "No faces detected", Toast.LENGTH_SHORT).show();
+                                }
+
+
+                                String faceId = result.get(0).getAsJsonObject().get("faceId").getAsString();
+
+                                JsonObject json2 = new JsonObject();
+                                json2.addProperty("faceId", faceId);
+                                json2.addProperty("personId", targetPersonId);
+                                json2.addProperty("personGroupId", "snapsassin");
+
+                                Ion.with(context)
+                                        .load(getResources().getString(R.string.verify_face_identity_url))
+                                        .setHeader(getResources().getString(R.string.sub_id_key),
+                                                getResources().getString(R.string.sub_id))
+                                        .setJsonObjectBody(json2)
+                                        .asJsonObject()
+                                        .setCallback(new FutureCallback<JsonObject>() {
+                                            @Override
+                                            public void onCompleted(Exception e, JsonObject result) {
+                                                if (e != null) {
+                                                    return;
+                                                }
+
+                                                if (result.get("isIdentical").getAsBoolean()) {
+                                                    assassinationSuccessful();
+                                                }
+                                                else {
+                                                    Toast.makeText(GameActivity.this, "You missed!", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            }
+                        });
+//
+//                RequestQueue RQ = Volley.newRequestQueue(GameActivity.this);
+//                JSONObject body = new JSONObject();
+//
+//                // Needs urk
+//                try {
+//                    body = new JSONObject("{\"url\":\"" + mUrl + "\"}");
+//                } catch (JSONException e) {
+//                    Toast.makeText(GameActivity.this, "Your JSON is bad and you should feel bad", Toast.LENGTH_LONG).show();
+//                }
+//
+//                // Detect (get a face from the new picture)
+//                JsonArrayRequest req = new JsonArrayRequest(Request.Method.POST, getResources().getString(R.string.detect_face_url), (JSONArray) body,
+//                        new Response.Listener<JSONArray>() {
+//                            @Override
+//                            public void onResponse(JSONArray response) {
+//                                String faceId = "";
+//                                try {
+////                                    faceId = response.getString("faceId");
+//                                    faceId = response.getJSONObject(0).getString("faceId");
+//                                } catch (JSONException e) {
+//                                    Toast.makeText(GameActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+//                                }
+//
+//                                RequestQueue QR_ = Volley.newRequestQueue(GameActivity.this);
+//                                JSONObject obj = new JSONObject();
+//                                Log.d("293", "here!");
+//                                try {
+//                                    obj = new JSONObject("{\"faceId\":\"" + faceId + "\", \"personId\":\"" + targetPersonId + "\", \"personGroupId\":\"snapsassin\"}");
+//                                } catch (JSONException e) {
+//                                    Toast.makeText(GameActivity.this, "Your JSON is bad and you should feel bad", Toast.LENGTH_LONG).show();
+//                                }
+//                                Log.d("304", "here!");
+//                                JsonObjectRequest req_ = new JsonObjectRequest(Request.Method.POST,
+//                                        mUrl, obj,
+//                                        new Response.Listener<JSONObject>() {
+//                                            @Override
+//                                            public void onResponse(JSONObject response) {
+//                                                Log.d("310", "here!");
+//                                                Toast.makeText(GameActivity.this, "WE MADE IT!", Toast.LENGTH_SHORT).show();
+//                                                Boolean isDed = response.optBoolean("isIdentical");
+//                                                if (isDed) assassinationSuccessful();
+//                                                else Toast.makeText(GameActivity.this, "That wasn't your target!", Toast.LENGTH_SHORT).show();
+//                                            }
+//
+//                                        },
+//                                        new Response.ErrorListener() {
+//                                            @Override
+//                                            public void onErrorResponse(VolleyError error) {
+//                                                Toast.makeText(GameActivity.this, "We done goofed", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        }
+//                                ) {
+//                                    @Override
+//                                    public Map<String, String> getHeaders() throws AuthFailureError {
+//                                        Map<String, String> header = new HashMap<>();
+//                                        header.put(getResources().getString(R.string.sub_id_key),
+//                                                   getResources().getString(R.string.sub_id));
+//
+//                                        return header;
+//                                    }
+//                                };
+//                                QR_.add(req_);
+//                            }
+//                        },
+//                        new Response.ErrorListener() {
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//                                Toast.makeText(GameActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                ) {
+//                    @Override
+//                    public Map<String, String> getHeaders() throws AuthFailureError {
+//                        Map<String, String> header = new HashMap<>();
+//                        header.put(getResources().getString(R.string.sub_id_key),
+//                                getResources().getString(R.string.sub_id));
+//
+//                        return header;
+//                    }
+//                };
+//                RQ.add(req);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // STUB
+            }
+        });
+
+//        assassinationSuccessful();
+    }
+
+    public void dispatchTakePictureIntent(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     private void assassinationSuccessful() {
@@ -276,7 +447,14 @@ public class GameActivity extends AppCompatActivity {
                 String newTargetID = dataSnapshot.child("players/" + targetID + "/target").getValue().toString();
                 gamesRef.child(key + "/players/" + id + "/target").setValue(newTargetID);
 
-                // TODO: account for winner
+                // Remove victim's target
+                gamesRef.child(key + "/players/" + targetID + "/target").setValue("None (You're Dead).");
+
+                int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
+                if (numPlayers - numDead == 1) {
+                    // You won!
+                    gamesRef.child(key + "/players/" + id + "/status").setValue("4");
+                }
             }
 
             @Override
