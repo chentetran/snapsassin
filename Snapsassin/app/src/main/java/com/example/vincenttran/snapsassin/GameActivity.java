@@ -47,6 +47,7 @@ public class GameActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     FirebaseStorage storage;
     StorageReference storage_root;
+    DatabaseReference gamesRef;
     static final int REQUEST_IMAGE_CAPTURE = 7331;
 
 
@@ -63,7 +64,7 @@ public class GameActivity extends AppCompatActivity {
         key = intent.getStringExtra("gameKey");
 
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference gamesRef = database.getReference("Games");
+        gamesRef = database.getReference("Games");
 
         SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
         id = prefs.getString("id", "No ID Error");
@@ -208,6 +209,10 @@ public class GameActivity extends AppCompatActivity {
                 });
 
         // TODO: set status as ready on firebase
+        LinearLayout readyBar = (LinearLayout) findViewById(R.id.readyBar);
+        readyBar.setVisibility(View.GONE);
+
+
     }
 
     @Override
@@ -236,6 +241,8 @@ public class GameActivity extends AppCompatActivity {
 //                    Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
                     // TODO: store in games
 
+                    assassinationSuccessful();
+
 
 
                 }
@@ -244,9 +251,37 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void dispatchTakePictureIntent(View view) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+//        }
+        assassinationSuccessful();
+
+    }
+
+    private void assassinationSuccessful() {
+        gamesRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Increment numDead
+                int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
+                numDead++;
+                Toast.makeText(GameActivity.this, String.valueOf(numDead), Toast.LENGTH_SHORT).show();
+                gamesRef.child(key + "/numDead").setValue(numDead);
+
+                // Change victim's status code
+                gamesRef.child(key + "/players/" + targetID + "/status").setValue("3");
+
+                // Assign victim's target to yourself
+                String newTargetID = dataSnapshot.child("players/" + targetID + "/target").getValue().toString();
+                gamesRef.child(key + "/players/" + id + "/target").setValue(newTargetID);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }

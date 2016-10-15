@@ -69,33 +69,27 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
 
-        final DatabaseReference numPlayersRef = database.getReference("Games").child("-Kl32asdbfa9hnfa/numPlayers");
-        numPlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int numPlayers = Integer.parseInt(dataSnapshot.getValue().toString());
-
-                numPlayers++;
-                numPlayersRef.setValue(numPlayers);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
         id = prefs.getString("id", "No ID Error");
         final String name = prefs.getString("name", "No name error");
 
-        final DatabaseReference playerRef = database.getReference("Games/-Kl32asdbfa9hnfa/players/" + id);
-        playerRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference gameRef = database.getReference("Games/-Kl32asdbfa9hnfa/");
+        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    playerRef.child("status").setValue("0");
-                    playerRef.child("name").setValue(name);
+                if (!dataSnapshot.child("players/" + id).exists()) {
+                    // hardcoded. fix later
+                    DatabaseReference userRef = database.getReference("Users/" + id);
+
+                    userRef.child("games").child("-Kl32asdbfa9hnfa").setValue("Polyhack");
+                    userRef.child("name").setValue(name);
+
+
+                    gameRef.child("players/" + id  + "/status").setValue("0");
+                    gameRef.child("players/" + id  + "/name").setValue(name);
+                    int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
+                    numPlayers++;
+                    gameRef.child("numPlayers").setValue(numPlayers);
                 }
             }
 
@@ -104,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
 
         /******************/
 
