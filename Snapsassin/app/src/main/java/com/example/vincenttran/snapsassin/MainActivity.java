@@ -27,7 +27,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,6 +67,46 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         storage_root = storage.getReferenceFromUrl("gs://snap-91990.appspot.com");
 
+        database = FirebaseDatabase.getInstance();
+
+        final DatabaseReference numPlayersRef = database.getReference("Games").child("-Kl32asdbfa9hnfa/numPlayers");
+        numPlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int numPlayers = Integer.parseInt(dataSnapshot.getValue().toString());
+
+                numPlayers++;
+                numPlayersRef.setValue(numPlayers);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
+        id = prefs.getString("id", "No ID Error");
+        final String name = prefs.getString("name", "No name error");
+
+        final DatabaseReference playerRef = database.getReference("Games/-Kl32asdbfa9hnfa/players/" + id);
+        playerRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    playerRef.child("status").setValue("0");
+                    playerRef.child("name").setValue(name);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        /******************/
+
         final ListView listView = (ListView) findViewById(R.id.gamesList);
 
         List<String> gamesList = new ArrayList<>();
@@ -90,10 +134,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
-        id = prefs.getString("id", "No ID Error");
 
-        database = FirebaseDatabase.getInstance();
+
+
     }
 
     private void setUpToolbar() {

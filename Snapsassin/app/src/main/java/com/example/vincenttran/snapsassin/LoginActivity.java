@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         if (currentAccessToken != null) { // not logged in
             Profile profile = Profile.getCurrentProfile();
             startMainActivity(profile);
+
         }
         else  { // already logged in
             callbackManager = CallbackManager.Factory.create();
@@ -96,32 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                     Profile profile = Profile.getCurrentProfile();
                     startMainActivity(profile);
 
-                    /******************/
-                    // Increment numPlayers and create user child in polyhack game
-                    // TODO: remove this when join game feature is implemented
 
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    final DatabaseReference numPlayersRef = database.getReference("Games").child("-Kl32asdbfa9hnfa/numPlayers");
-                    numPlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            int numPlayers = Integer.parseInt(dataSnapshot.getValue().toString());
-
-                            numPlayers++;
-                            numPlayersRef.setValue(numPlayers);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-                    DatabaseReference playerRef = database.getReference("Games/-Kl32asdbfa9hnfa/players/" + profile.getId());
-                    playerRef.child("status").setValue("0");
-                    playerRef.child("name").setValue(profile.getName());
-
-                    /******************/
 
                 }
 

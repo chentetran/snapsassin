@@ -79,74 +79,88 @@ public class GameActivity extends AppCompatActivity {
         gamesRef.child(key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("players/" + id + "/status").getValue().toString().equals("0")) {
-                    readyBar.setVisibility(View.VISIBLE);
-                    playersReadyView.setVisibility(View.VISIBLE);
+                // Find out how many are ready
+                String numReady = dataSnapshot.child("numReady").getValue().toString();
+                int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
+                TextView playersReadyTextView = (TextView) findViewById(R.id.playersReadyTextView);
+                playersReadyTextView.setText(numReady + " / " + String.valueOf(numPlayers));
+
+
+
+                String status = dataSnapshot.child("players/" + id + "/status").getValue().toString();
+
+                switch (status){
+                    case "0":
+                        readyBar.setVisibility(View.VISIBLE);
+                        playersReadyView.setVisibility(View.VISIBLE);
+                        break;
+                    case "1":
+                        break;
+                    default:
+                        RelativeLayout yourTargetLayout = (RelativeLayout) findViewById(R.id.yourTargetLayout);
+                        yourTargetLayout.setVisibility(View.VISIBLE);
+                        targetID = dataSnapshot.child("players/" + id + "/target").getValue().toString();
+                        String targetName = dataSnapshot.child("players/" + targetID + "/name").getValue().toString();
+
+                        targetTextView.setText(targetName);
+
+                        int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
+                        String numAlive = String.valueOf(numPlayers - numDead);
+
+                        playersInGameTextView.setText(numAlive + " / " + String.valueOf(numPlayers));
                 }
-                else {
-                    targetID = dataSnapshot.child("players/" + id + "/target").getValue().toString();
-                    String targetName = dataSnapshot.child("players/" + targetID + "/name").getValue().toString();
 
-                    targetTextView.setText(targetName);
+                // Get every player in game
+                final List<String> playerList = new ArrayList<String>();
+                final List<Integer> playerStatusList = new ArrayList<Integer>();
 
-                    int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
-                    int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
-                    String numAlive = String.valueOf(numPlayers - numDead);
+                for (DataSnapshot child : dataSnapshot.child("players").getChildren()) {
+                    playerList.add(String.valueOf(child.child("name").getValue()));
+                    playerStatusList.add(Integer.parseInt(child.child("status").getValue().toString()));
+                }
 
-                    playersInGameTextView.setText(numAlive + " / " + String.valueOf(numPlayers));
+                ListView playerListView = (ListView) findViewById(R.id.list_players);
 
-                    // Get every player in game
-                    final List<String> playerList = new ArrayList<String>();
-                    final List<Integer> playerStatusList = new ArrayList<Integer>();
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        context,
+                        R.layout.list_item_players,
+                        android.R.id.text1,
+                        playerList
+                ) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
 
-                    for (DataSnapshot child : dataSnapshot.child("players").getChildren()) {
-                        playerList.add(String.valueOf(child.child("name").getValue()));
-                        playerStatusList.add(Integer.parseInt(child.child("status").getValue().toString()));
-                    }
+                        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                        TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-                    ListView playerListView = (ListView) findViewById(R.id.list_players);
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            context,
-                            R.layout.list_item_players,
-                            android.R.id.text1,
-                            playerList
-                    ) {
-                        @Override
-                        public View getView(int position, View convertView, ViewGroup parent) {
-                            View view = super.getView(position, convertView, parent);
-
-                            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-
-                            text1.setText(playerList.get(position));
-                            switch (playerStatusList.get(position)) { // set status text and color
-                                case 0: // waiting
-                                    text2.setText("waiting");
-                                    break;
-                                case 1: // ready
-                                    text2.setText("ready");
-                                    text2.setTextColor(Color.BLUE);
-                                    break;
-                                case 2: // alive
-                                    text2.setText("alive");
-                                    text2.setTextColor(Color.GREEN);
-                                    break;
-                                case 3: // dead
-                                    text2.setText("dead");
-                                    text2.setTextColor(Color.RED);
-                                    break;
-                                case 4: // winner
-                                    text2.setText("winner");
-                                    text2.setTextColor(Color.GREEN);
-                                    break;
-                            }
-                            return view;
+                        text1.setText(playerList.get(position));
+                        switch (playerStatusList.get(position)) { // set status text and color
+                            case 0: // waiting
+                                text2.setText("waiting");
+                                break;
+                            case 1: // ready
+                                text2.setText("ready");
+                                text2.setTextColor(Color.BLUE);
+                                break;
+                            case 2: // alive
+                                text2.setText("alive");
+                                text2.setTextColor(Color.GREEN);
+                                break;
+                            case 3: // dead
+                                text2.setText("dead");
+                                text2.setTextColor(Color.RED);
+                                break;
+                            case 4: // winner
+                                text2.setText("winner");
+                                text2.setTextColor(Color.GREEN);
+                                break;
                         }
-                    };
+                        return view;
+                    }
+                };
 
-                    playerListView.setAdapter(adapter);
-                }
+                playerListView.setAdapter(adapter);
             }
 
             @Override
@@ -222,7 +236,7 @@ public class GameActivity extends AppCompatActivity {
 //                    Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
                     // TODO: store in games
 
-                    
+
 
                 }
             });
