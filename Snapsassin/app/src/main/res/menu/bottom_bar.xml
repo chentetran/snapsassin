@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Browse -->
+    <item
+        android:id="@+id/game_item"
+        android:icon="@drawable/icon_dashboard"
+        android:title="@string/game_item_text" />
+    <!-- Groups -->
+    <item
+        android:id="@+id/camera_item"
+        android:icon="@drawable/icon_face"
+        android:title="@string/camera_item_text" />
+    <!-- Settings -->
+    <item
+        android:id="@+id/settings_item"
+        android:icon="@drawable/icon_menu"
+        android:title="@string/settings_item_text" />
+    <!-- to add custom color when selected, app:barColorWhenSelected-->
+</menu>

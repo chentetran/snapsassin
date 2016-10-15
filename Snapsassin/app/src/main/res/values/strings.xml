@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Snapsassin</string>
+
+    <!-- Bottom Bar -->
+    <string name="game_item_text">Game</string>
+    <string name="camera_item_text">Camera</string>
+    <string name="settings_item_text">Settings</string>
 </resources>
