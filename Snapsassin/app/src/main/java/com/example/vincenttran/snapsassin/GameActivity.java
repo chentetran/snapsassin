@@ -44,6 +44,7 @@ public class GameActivity extends AppCompatActivity {
     private String id;
     private String title;
     private String targetID;
+    private FirebaseDatabase database;
     FirebaseStorage storage;
     StorageReference storage_root;
     static final int REQUEST_IMAGE_CAPTURE = 7331;
@@ -61,7 +62,7 @@ public class GameActivity extends AppCompatActivity {
         title = intent.getStringExtra("gameTitle");
         key = intent.getStringExtra("gameKey");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         final DatabaseReference gamesRef = database.getReference("Games");
 
         SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
@@ -218,7 +219,11 @@ public class GameActivity extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     // todo: upload to microsoft face
-                    Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
+                    // TODO: store in games
+
+                    
+
                 }
             });
         }

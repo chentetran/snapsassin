@@ -27,6 +27,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
+    private FirebaseDatabase database;
     FirebaseStorage storage;
     StorageReference storage_root;
     private String id;
@@ -90,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
         id = prefs.getString("id", "No ID Error");
+
+        database = FirebaseDatabase.getInstance();
     }
 
     private void setUpToolbar() {
@@ -206,8 +210,10 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     // todo: upload to microsoft face
-                    Toast.makeText(MainActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
                     Log.d("LINK", downloadUrl.toString());
+
+                    database.getReference("Users/" + id + "/photoUrl").setValue(downloadUrl.toString());
                 }
             });
         }
