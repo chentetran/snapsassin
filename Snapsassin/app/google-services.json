@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "259146958304",
+    "firebase_url": "https://snap-91990.firebaseio.com",
+    "project_id": "snap-91990",
+    "storage_bucket": "snap-91990.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259146958304:android:b78dc35254ed785c",
+        "android_client_info": {
+          "package_name": "com.example.vincenttran.snapsassin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "259146958304-oeapc4kdnuob34fopk509el8ocqbuasm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOCGtHriGSSsC985PGc3yEEqqGCOmtQeE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
