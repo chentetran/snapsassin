@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -144,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                         return headers;
                     }
                 };
-                        RQ.add(rq);
+                RQ.add(rq);
             }
 
             @Override
@@ -154,6 +155,37 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
+        // Trigger a training session
+
+        RequestQueue RQ = Volley.newRequestQueue(this);
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,
+                getResources().getString(R.string.train_group_url),
+                new JSONObject(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                // STUB
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // STUB
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(getResources().getString(R.string.sub_id_key),
+                        getResources().getString(R.string.sub_id));
+                return headers;
+            }
+        };
+        RQ.add(req);
     }
 
+    public void takeAShot(View v) {
+        // STUB
+    }
 }
+

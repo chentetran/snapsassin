@@ -36,4 +36,14 @@
         android:layout_marginTop="56dp"
         android:id="@+id/button2"
         android:onClick="attachphoto"/>
+
+    <Button
+        android:text="Attempt to Win"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button2"
+        android:layout_alignStart="@+id/button2"
+        android:layout_marginTop="62dp"
+        android:id="@+id/button3"
+        android:onClick="takeAShot" />
 </RelativeLayout>
