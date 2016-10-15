@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -191,14 +192,46 @@ public class LoginActivity extends AppCompatActivity {
                 return headers;
             }
         };
+//        This takes much too long to do this way
 //        RQ.add(req);
     }
 
     public void takeAShot(View v) {
+        String uid;
         // Upload to storage, get URL
         // Run URL through Face::Identify to get a candidate and a confidence level
         // Decide (if not the right person, nothing happens, perhaps a failure message)
         // If a kill, remove victim from game and assign victim's target to successful assassin
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference foo = database.getReference("Users/" + uid);
+
+        RequestQueue RQ = Volley.newRequestQueue(this);
+        JSONObject body = new JSONObject();
+
+        // Needs urk
+        try {
+            body = new JSONObject();
+        } catch (JSONException e) {
+            Toast.makeText(this, "Your JSON is bad and you should feel bad", Toast.LENGTH_LONG).show();
+        }
+
+        // Detect (get a face from the new picture)
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST);
+        // RQ.add(req);
+
+        body = new JSONObject();
+
+        // Needed: persongroupId, personId, faceId
+        try {
+            body = new JSONObject();
+        } catch (JSONException e) {
+            Toast.makeText(this, "Your JSON is bad and you should feel bad", Toast.LENGTH_LONG).show();
+        }
+
+        // Verify that the new picture is of who we need it to be
+        req = new JsonObjectRequest(Request.Method.POST);
+        // RQ.add(req);
     }
 }
 
