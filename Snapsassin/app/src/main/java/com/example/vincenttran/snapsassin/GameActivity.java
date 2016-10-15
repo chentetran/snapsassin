@@ -106,6 +106,7 @@ public class GameActivity extends AppCompatActivity {
 
 
                 String status = dataSnapshot.child("players/" + id + "/status").getValue().toString();
+                RelativeLayout yourTargetLayout = (RelativeLayout) findViewById(R.id.yourTargetLayout);
 
                 switch (status){
                     case "0":
@@ -114,8 +115,10 @@ public class GameActivity extends AppCompatActivity {
                         break;
                     case "1":
                         break;
+                    case "3":
+                        yourTargetLayout.setVisibility(View.GONE);
+                        break;
                     default:
-                        RelativeLayout yourTargetLayout = (RelativeLayout) findViewById(R.id.yourTargetLayout);
                         yourTargetLayout.setVisibility(View.VISIBLE);
                         targetID = dataSnapshot.child("players/" + id + "/target").getValue().toString();
                         String targetName = dataSnapshot.child("players/" + targetID + "/name").getValue().toString();
@@ -330,88 +333,6 @@ public class GameActivity extends AppCompatActivity {
                                         });
                             }
                         });
-//
-//                RequestQueue RQ = Volley.newRequestQueue(GameActivity.this);
-//                JSONObject body = new JSONObject();
-//
-//                // Needs urk
-//                try {
-//                    body = new JSONObject("{\"url\":\"" + mUrl + "\"}");
-//                } catch (JSONException e) {
-//                    Toast.makeText(GameActivity.this, "Your JSON is bad and you should feel bad", Toast.LENGTH_LONG).show();
-//                }
-//
-//                // Detect (get a face from the new picture)
-//                JsonArrayRequest req = new JsonArrayRequest(Request.Method.POST, getResources().getString(R.string.detect_face_url), (JSONArray) body,
-//                        new Response.Listener<JSONArray>() {
-//                            @Override
-//                            public void onResponse(JSONArray response) {
-//                                String faceId = "";
-//                                try {
-////                                    faceId = response.getString("faceId");
-//                                    faceId = response.getJSONObject(0).getString("faceId");
-//                                } catch (JSONException e) {
-//                                    Toast.makeText(GameActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-//                                }
-//
-//                                RequestQueue QR_ = Volley.newRequestQueue(GameActivity.this);
-//                                JSONObject obj = new JSONObject();
-//                                Log.d("293", "here!");
-//                                try {
-//                                    obj = new JSONObject("{\"faceId\":\"" + faceId + "\", \"personId\":\"" + targetPersonId + "\", \"personGroupId\":\"snapsassin\"}");
-//                                } catch (JSONException e) {
-//                                    Toast.makeText(GameActivity.this, "Your JSON is bad and you should feel bad", Toast.LENGTH_LONG).show();
-//                                }
-//                                Log.d("304", "here!");
-//                                JsonObjectRequest req_ = new JsonObjectRequest(Request.Method.POST,
-//                                        mUrl, obj,
-//                                        new Response.Listener<JSONObject>() {
-//                                            @Override
-//                                            public void onResponse(JSONObject response) {
-//                                                Log.d("310", "here!");
-//                                                Toast.makeText(GameActivity.this, "WE MADE IT!", Toast.LENGTH_SHORT).show();
-//                                                Boolean isDed = response.optBoolean("isIdentical");
-//                                                if (isDed) assassinationSuccessful();
-//                                                else Toast.makeText(GameActivity.this, "That wasn't your target!", Toast.LENGTH_SHORT).show();
-//                                            }
-//
-//                                        },
-//                                        new Response.ErrorListener() {
-//                                            @Override
-//                                            public void onErrorResponse(VolleyError error) {
-//                                                Toast.makeText(GameActivity.this, "We done goofed", Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        }
-//                                ) {
-//                                    @Override
-//                                    public Map<String, String> getHeaders() throws AuthFailureError {
-//                                        Map<String, String> header = new HashMap<>();
-//                                        header.put(getResources().getString(R.string.sub_id_key),
-//                                                   getResources().getString(R.string.sub_id));
-//
-//                                        return header;
-//                                    }
-//                                };
-//                                QR_.add(req_);
-//                            }
-//                        },
-//                        new Response.ErrorListener() {
-//                            @Override
-//                            public void onErrorResponse(VolleyError error) {
-//                                Toast.makeText(GameActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//                ) {
-//                    @Override
-//                    public Map<String, String> getHeaders() throws AuthFailureError {
-//                        Map<String, String> header = new HashMap<>();
-//                        header.put(getResources().getString(R.string.sub_id_key),
-//                                getResources().getString(R.string.sub_id));
-//
-//                        return header;
-//                    }
-//                };
-//                RQ.add(req);
             }
 
             @Override
@@ -448,7 +369,7 @@ public class GameActivity extends AppCompatActivity {
                 gamesRef.child(key + "/players/" + id + "/target").setValue(newTargetID);
 
                 // Remove victim's target
-                gamesRef.child(key + "/players/" + targetID + "/target").setValue("None (You're Dead).");
+//                gamesRef.child(key + "/players/" + targetID + "/target").setValue("None (You're Dead).");
 
                 int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
                 if (numPlayers - numDead == 1) {
