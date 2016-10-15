@@ -28,8 +28,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.google.firebase:firebase-core:9.6.1' // firebase
-    compile 'com.google.android.gms:play-services-auth:9.6.1' // google play auth
+//    compile 'com.google.android.gms:play-services-auth:9.6.1' // google play auth
     compile 'com.google.firebase:firebase-database:9.6.1' // database
+    compile 'com.google.firebase:firebase-storage:9.6.1' // database
     compile 'com.facebook.android:facebook-android-sdk:[4,5)' // fb auth
     compile 'com.koushikdutta.ion:ion:2.+'  // networking
     compile 'com.android.support:design:24.2.1'
