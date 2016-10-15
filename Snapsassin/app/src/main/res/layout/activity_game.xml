@@ -1,54 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:id="@+id/activity_gameplay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+
     tools:context="com.example.vincenttran.snapsassin.GameActivity">
 
     <LinearLayout
+        android:visibility="gone"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:id="@+id/readyBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_dark_background"
+        android:weightSum="1">
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/ready_button"
+            android:onClick="readyButton"
+            android:textColor="@color/colorPrimaryDark"
+            android:id="@+id/button1"/>
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="@string/startRule"
+            android:layout_gravity="center"
+            android:layout_marginLeft="40dp"
+            android:textColor="#fff"
+            android:textStyle="italic"
+            >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="1">
-            <Button
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="@string/ready_button"
-                android:onClick="gameStart"
-                android:id="@+id/button1"/>
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:text="@string/startRule"
-                android:layout_gravity="center"
-                android:layout_marginLeft="40dp"
-                android:textStyle="italic"
-                >
-            </TextView>
-        </LinearLayout>
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginTop="10dp"
-            />
-        <LinearLayout
+
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
             <TextView
+                android:layout_alignParentStart="true"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textSize="20dp"
@@ -56,15 +62,18 @@
             </TextView>
 
             <TextView
+                android:layout_alignParentEnd="true"
+                android:id="@+id/targetTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
-                android:text="n/a"
                 android:layout_alignParentRight="true">
             </TextView>
-        </LinearLayout>
+        </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/playersReadyCount"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -73,6 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textSize="20dp"
+                android:layout_alignParentStart="true"
                 android:text="Players Ready:">
             </TextView>
 
@@ -83,9 +93,9 @@
                 android:text="0/2"
                 android:layout_alignParentRight="true">
             </TextView>
-        </LinearLayout>
+        </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -94,17 +104,19 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textSize="20dp"
+                android:layout_alignParentStart="true"
                 android:text="Players in Game:">
             </TextView>
 
             <TextView
+                android:id="@+id/playersInGameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
-                android:text="0/2"
-                android:layout_alignParentRight="true">
+                android:layout_alignParentEnd="true"
+                >
             </TextView>
-        </LinearLayout>
+        </RelativeLayout>
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
@@ -167,4 +179,4 @@
             android:id="@+id/button2"
             android:layout_gravity="end"/>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

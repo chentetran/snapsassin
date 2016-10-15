@@ -18,8 +18,11 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -92,6 +95,34 @@ public class LoginActivity extends AppCompatActivity {
                     accessToken = loginResult.getAccessToken();
                     Profile profile = Profile.getCurrentProfile();
                     startMainActivity(profile);
+
+                    /******************/
+                    // Increment numPlayers and create user child in polyhack game
+                    // TODO: remove this when join game feature is implemented
+
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    final DatabaseReference numPlayersRef = database.getReference("Games").child("-Kl32asdbfa9hnfa/numPlayers");
+                    numPlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            int numPlayers = Integer.parseInt(dataSnapshot.getValue().toString());
+
+                            numPlayers++;
+                            numPlayersRef.setValue(numPlayers);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    DatabaseReference playerRef = database.getReference("Games/-Kl32asdbfa9hnfa/players/" + profile.getId());
+                    playerRef.child("status").setValue("0");
+                    playerRef.child("name").setValue(profile.getName());
+
+                    /******************/
+
                 }
 
                 @Override
@@ -111,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
         if (profile != null) {
             String id = profile.getId();
             String name = profile.getName();
+
 
             // store user data in sharedpref
             SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
