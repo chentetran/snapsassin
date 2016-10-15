@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:id="@+id/activity_gameplay"
@@ -9,174 +9,154 @@
     tools:context="com.example.vincenttran.snapsassin.GameActivity">
 
     <LinearLayout
-        android:visibility="gone"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:id="@+id/readyBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/cardview_dark_background"
-        android:weightSum="1">
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/ready_button"
-            android:onClick="readyButton"
-            android:textColor="@color/colorPrimaryDark"
-            android:id="@+id/button1"/>
-        <TextView
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="@string/startRule"
-            android:layout_gravity="center"
-            android:layout_marginLeft="40dp"
-            android:textColor="#fff"
-            android:textStyle="italic"
-            >
-        </TextView>
-    </LinearLayout>
-
-    <LinearLayout
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_height="match_parent">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/actionBarSize"
+        android:background="?android:attr/colorPrimary"/>
 
         <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_alignParentStart="true"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:textSize="20dp"
-                android:text="Your Target:">
-            </TextView>
-
-            <TextView
-                android:layout_alignParentEnd="true"
-                android:id="@+id/targetTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:layout_alignParentRight="true">
-            </TextView>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:visibility="gone"
-            android:id="@+id/playersReadyCount"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:textSize="20dp"
-                android:layout_alignParentStart="true"
-                android:text="Players Ready:">
-            </TextView>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="0/2"
-                android:layout_alignParentRight="true">
-            </TextView>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:textSize="20dp"
-                android:layout_alignParentStart="true"
-                android:text="Players in Game:">
-            </TextView>
-
-            <TextView
-                android:id="@+id/playersInGameTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:layout_alignParentEnd="true"
-                >
-            </TextView>
-        </RelativeLayout>
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginTop="10dp"
-            />
-
-        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="265dp"
-            android:stretchColumns="1"
-            android:id="@+id/playerTable">
+            android:layout_height="match_parent">
 
-            <TableRow
+            <LinearLayout
+                android:id="@+id/readyBar"
+                android:visibility="gone"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <TextView
+                android:layout_height="wrap_content"
+                android:background="@color/cardview_dark_background"
+                android:weightSum="1">
+                <Button
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:textSize="20sp"
-                    android:text="Vincent">
-                </TextView>
-
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/ready_button"
+                    android:onClick="readyButton"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:id="@+id/button1"/>
                 <TextView
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:textSize="20sp"
-                    android:text="ALIVE"
-                    android:layout_gravity="end">
+                    android:text="@string/startRule"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="40dp"
+                    android:textColor="#fff"
+                    android:textStyle="italic"
+                    >
                 </TextView>
-            </TableRow>
+            </LinearLayout>
 
-            <TableRow
+            <LinearLayout
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
 
-                <TextView
+                <RelativeLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:textSize="20sp"
-                    android:text="Chuck">
-                </TextView>
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_alignParentStart="true"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:textSize="20dp"
+                        android:text="Your Target:">
+                    </TextView>
 
-                <TextView
+                    <TextView
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/targetTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:layout_alignParentRight="true">
+                    </TextView>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/playersReadyCount"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:textSize="20sp"
-                    android:text="ALIVE"
-                    android:layout_gravity="end">
-                </TextView>
-            </TableRow>
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:textSize="20dp"
+                        android:layout_alignParentStart="true"
+                        android:text="Players Ready:">
+                    </TextView>
 
-        </TableLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:text="0/2"
+                        android:layout_alignParentRight="true">
+                    </TextView>
+                </RelativeLayout>
 
-        <Button
-            android:text="Snap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/button2"
-            android:layout_gravity="end"/>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:textSize="20dp"
+                        android:layout_alignParentStart="true"
+                        android:text="Players in Game:">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/playersInGameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:layout_alignParentEnd="true"
+                        >
+                    </TextView>
+
+                    <ListView
+                        android:id="@+id/list_players"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/playersInGameTextView"
+
+                        />
+                </RelativeLayout>
+
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
     </LinearLayout>
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:layout_gravity="bottom"
+        android:src="@drawable/crosshair"/>
+</android.support.design.widget.CoordinatorLayout>
