@@ -6,4 +6,31 @@
     <string name="startRule">Game will start when 50% of players are ready</string>
     <string name="open">Drawer open</string>
     <string name="closed">Drawer closed</string>
+
+    <!-- Microsoft Face's names for things -->
+    <string name="group_id">personGroupId</string>
+    <string name="person_id">personId</string>
+    <string name="user_data">userData</string>
+    <string name="target_face">targetFace</string>
+    <string name="face_rect">faceRectangle</string>
+    <string name="face_id">faceId</string>
+    <string name="name">name</string>
+    <string name="sub_id_key">Ocp-Apim-Subscription-Key</string>
+
+    <!-- Microsoft Face API Subscriber Keys -->
+    <string name="sub_id">3ba61bc18b4c4b2bade456b57c93d5e3</string>
+    <string name="sub_id_2">760f3023c5b1419aae556d0e908e01a4</string>
+    <!-- Microsoft Face Person Group Name -->
+    <string name="group_name">snapsassin</string>
+
+    <!-- Request URLs -->
+    <string name="train_group_url">https://api.projectoxford.ai/face/v1.0/persongroups/snapsassin/train</string>
+    <string name="training_status_url">https://api.projectoxford.ai/face/v1.0/persongroups/snapsassin/training</string>
+
+    <string name="create_person_url">https://api.projectoxford.ai/face/v1.0/persongroups/snapsassin/persons/</string>
+
+    <string name="add_face_url">https://api.projectoxford.ai/face/v1.0/persongroups/snapsassin/persons/{personId}/persistedFaces</string>
+
+    <string name="detect_face_url">https://api.projectoxford.ai/face/v1.0/detect</string>
+    <string name="verify_face_identity_url">https://api.projectoxford.ai/face/v1.0/verify</string>
 </resources>

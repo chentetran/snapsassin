@@ -275,6 +275,8 @@ public class GameActivity extends AppCompatActivity {
                 // Assign victim's target to yourself
                 String newTargetID = dataSnapshot.child("players/" + targetID + "/target").getValue().toString();
                 gamesRef.child(key + "/players/" + id + "/target").setValue(newTargetID);
+
+                // TODO: account for winner
             }
 
             @Override
