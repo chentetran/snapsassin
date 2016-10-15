@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -114,26 +115,31 @@ public class LoginActivity extends AppCompatActivity {
                 RequestQueue RQ = Volley.newRequestQueue(LoginActivity.this);
                 JSONObject obj = new JSONObject();
                 try {
-                    obj = new JSONObject("{\"url\":" + url.replace("{personId}", personId) + "}");
+                    obj = new JSONObject("{\"url\":" + "\"" + url.replace("{personId}", personId) + "\"}");
                 } catch (JSONException e) {
-                    Toast.makeText(LoginActivity.this, "Your JSON is bad and you should feel bad",
+                    Toast.makeText(LoginActivity.this, e.toString(),
                             Toast.LENGTH_SHORT).show();
                 }
 
+                Toast.makeText(LoginActivity.this, getResources().getString(R.string.add_face_url).replace("{personId}", personId), Toast.LENGTH_LONG).show();
                 JsonObjectRequest rq = new JsonObjectRequest(Request.Method.POST,
-                        getResources().getString(R.string.add_face_url),
+                        getResources().getString(R.string.add_face_url).replace("{personId}", personId),
                         obj,
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 // Nothing to do. We don't use the persistedFaceId now
+                                Toast.makeText(LoginActivity.this, "Photo uploaded", Toast.LENGTH_SHORT).show();
                             }
                         },
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError e) {
-                                Toast.makeText(LoginActivity.this, "Failed to add your photo",
-                                        Toast.LENGTH_SHORT).show();
+                                int status = e.networkResponse.statusCode;
+                                NetworkResponse res = e.networkResponse;
+
+                                Toast.makeText(LoginActivity.this, status + "\n" + new String(res.data),
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
                 ) {
@@ -159,18 +165,22 @@ public class LoginActivity extends AppCompatActivity {
 
         RequestQueue RQ = Volley.newRequestQueue(this);
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,
+        // This has been confirmed very slow, even for relatively small groups. Retraining the
+        // entire group for each photo addition is not feasible. Asking the yes/no question is a
+        // better approach
+        StringRequest req = new StringRequest(Request.Method.POST,
                 getResources().getString(R.string.train_group_url),
-                new JSONObject(), new Response.Listener<JSONObject>() {
+                new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
-                // STUB
+            public void onResponse(String response) {
+                Toast.makeText(LoginActivity.this, "[" + response + "]", Toast.LENGTH_SHORT)
+                .show();
             }
         },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // STUB
+                        Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_LONG).show();
                     }
                 }) {
             @Override
@@ -181,11 +191,14 @@ public class LoginActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        RQ.add(req);
+//        RQ.add(req);
     }
 
     public void takeAShot(View v) {
-        // STUB
+        // Upload to storage, get URL
+        // Run URL through Face::Identify to get a candidate and a confidence level
+        // Decide (if not the right person, nothing happens, perhaps a failure message)
+        // If a kill, remove victim from game and assign victim's target to successful assassin
     }
 }
 
