@@ -115,7 +115,8 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="265dp"
-            android:stretchColumns="1">
+            android:stretchColumns="1"
+            android:id="@+id/playerTable">
 
             <TableRow
                 android:layout_width="match_parent"
@@ -145,7 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:textSize="20sp"
-                    android:text="Vincent">
+                    android:text="Chuck">
                 </TextView>
 
                 <TextView
