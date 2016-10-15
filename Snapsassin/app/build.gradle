@@ -29,8 +29,11 @@ dependencies {
 
     compile 'com.google.firebase:firebase-core:9.6.1' // firebase
     compile 'com.google.android.gms:play-services-auth:9.6.1' // google play auth
+    compile 'com.google.android.gms:play-services:9.6.1' // google play
     compile 'com.google.firebase:firebase-database:9.6.1' // database
     compile 'com.facebook.android:facebook-android-sdk:[4,5)' // fb auth
+    compile 'com.google.firebase:firebase-storage:9.6.1' // firebase storage
+
 
 }
 

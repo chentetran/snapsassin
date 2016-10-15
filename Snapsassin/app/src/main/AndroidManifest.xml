@@ -22,5 +22,6 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".GameActivity"></activity>
     </application>
-
+    <uses-feature android:name="android.hardware.camera"
+                  android:required="true" />
 </manifest>
