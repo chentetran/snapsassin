@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Snapsassin</string>
+    <string name="ready_button">I'm Ready!</string>
+    <string name="startRule">Game will start when 50% of players are ready</string>
 </resources>
