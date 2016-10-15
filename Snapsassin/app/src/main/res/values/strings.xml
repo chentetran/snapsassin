@@ -2,4 +2,6 @@
     <string name="app_name">Snapsassin</string>
     <!-- Login -->
     <string name="facebook_app_id">185190855257569</string>
+    <string name="ready_button">I\'m Ready!</string>
+    <string name="startRule">Game will start when 50% of players are ready</string>
 </resources>
