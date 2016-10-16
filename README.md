@@ -6,9 +6,9 @@ Like the live-action game, Assassin, but moderated by a mobile app. No one has t
 
 An Android app that uses Firebase realtime database, Firebase storage, Facebook auth, Microsoft Face API, and a simple Node.js backend (see repo called snap_server).
 
-![logo](/img/logo.png)
-![howtoplay](/img/howtoplay.jpg)
-![pitch](/img/pitch.jpg)
+![logo](/img/logo.png =150x)
+![howtoplay](/img/howtoplay.jpg =150x)
+![pitch](/img/pitch.jpg =150x)
 
 ### TODO:
 - Firebase push notifications.
