@@ -14,6 +14,7 @@ An Android app that uses Firebase realtime database, Firebase storage, Facebook 
 - Change weird mixture of Ion and Volley network calls to just Ion.
 - Firebase push notifications.
 - Implement join/create game functionalities (currently everyone joins the same game).
+- Find out why the ready bar doesn't always disappear when other people start the game without you.
 - Revamp the login system so its not hacky and uses more than just Facebook. And so players can actually log out.
 - Implement veto system to veto cheats, which may be possible if someone takes a photo of a photo of their target.
 - Display history of photos so that everyone can verify that the snap was legitimate.
