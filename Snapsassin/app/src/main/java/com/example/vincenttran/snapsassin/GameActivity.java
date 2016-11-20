@@ -198,7 +198,7 @@ public class GameActivity extends AppCompatActivity {
 
         setTitle(title);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle(title);
+//        toolbar.setTitle(title);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

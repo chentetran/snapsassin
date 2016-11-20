@@ -223,8 +223,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case 1:             // Index 1: Create Game
-//                        intent = new Intent(MainActivity.this, CreateGameActivity.class);
-//                        startActivity(intent);
+                        intent = new Intent(MainActivity.this, CreateGameActivity.class);
+                        startActivity(intent);
                         break;
 
                     case 2:             // Index 2: Calibrate Face
