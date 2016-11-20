@@ -33,6 +33,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.appindexing.Action;
@@ -93,32 +95,79 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
 
+
         SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
         id = prefs.getString("id", "No ID Error");
         final String name = prefs.getString("name", "No name error");
 
-        final DatabaseReference gameRef = database.getReference("Games/-Kl32asdbfa9hnfa/");
-        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//        final DatabaseReference gameRef = database.getReference("Games/-Kl32asdbfa9hnfa/");
+//        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (!dataSnapshot.child("players/" + id).exists()) { // User doesn't exist (in the game)
+//                    // hardcoded. fix later
+//                    DatabaseReference userRef = database.getReference("Users/" + id);
+//
+//                    userRef.child("games").child("-Kl32asdbfa9hnfa").setValue("Polyhack");
+//                    userRef.child("name").setValue(name);
+//
+//
+//                    gameRef.child("players/" + id + "/status").setValue("0");
+//                    gameRef.child("players/" + id + "/name").setValue(name);
+//                    int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
+//                    numPlayers++;
+//                    gameRef.child("numPlayers").setValue(numPlayers);
+//
+//
+//                    // Create a person on Microsoft Face
+//                    createPerson(name); // TODO: ADD THIS LINE BACK IN SOMEWHERE WHEN YOU REMOVE THIS CHUNK OF CODE
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
+        DatabaseReference userRef = database.getReference("Users/" + id);
+        userRef.child("name").setValue(name);
+
+        userRef.child("games").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.child("players/" + id).exists()) { // User doesn't exist (in the game)
-                    // hardcoded. fix later
-                    DatabaseReference userRef = database.getReference("Users/" + id);
-
-                    userRef.child("games").child("-Kl32asdbfa9hnfa").setValue("Polyhack");
-                    userRef.child("name").setValue(name);
-
-
-                    gameRef.child("players/" + id + "/status").setValue("0");
-                    gameRef.child("players/" + id + "/name").setValue(name);
-                    int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
-                    numPlayers++;
-                    gameRef.child("numPlayers").setValue(numPlayers);
-
-
-                    // Create a person on Microsoft Face
-                    createPerson(name);
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    // TODO: display no games found
                 }
+
+                final ListView listView = (ListView) findViewById(R.id.gamesList);
+
+                List<String> gamesList = new ArrayList<>();
+                final List<String> keyList = new ArrayList<>();
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    gamesList.add(String.valueOf(child.getValue()));
+                    keyList.add(String.valueOf(child.getKey()));
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        MainActivity.this,
+                        android.R.layout.simple_list_item_1,
+                        android.R.id.text1,
+                        gamesList
+                );
+
+                listView.setAdapter(adapter);
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        intent.putExtra("gameTitle", (String) listView.getItemAtPosition(position));
+                        intent.putExtra("gameKey", keyList.get(position));
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
@@ -126,36 +175,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
         /******************/
 
-        final ListView listView = (ListView) findViewById(R.id.gamesList);
-
-        List<String> gamesList = new ArrayList<>();
-        final List<String> keyList = new ArrayList<>();
-
-        gamesList.add("Polyhack");
-        keyList.add("-Kl32asdbfa9hnfa");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                MainActivity.this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                gamesList
-        );
-
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, GameActivity.class);
-                intent.putExtra("gameTitle", (String) listView.getItemAtPosition(position));
-                intent.putExtra("gameKey", keyList.get(position));
-                startActivity(intent);
-            }
-        });
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -396,11 +417,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Player " + microsoft_name + " created", Toast.LENGTH_SHORT).show();
 
                         // This needs to be Users/<UID>/personId, but we just don't have that yet
+                        // Store playerId into Firebase
                         DatabaseReference playerid = database.getReference("Users/" + id + "/personId");
                         playerid.setValue(microsoft_name);
                     }
                 },
-                // Store playerId into Firebase
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
