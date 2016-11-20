@@ -220,9 +220,15 @@ public class MainActivity extends AppCompatActivity {
                     case 0:             // Index 0: Join Game
 //                        intent = new Intent(MainActivity.this, JoinGameActivity.class);
 //                        startActivity(intent);
+
+                        // TODO: Check if user has a calibrated photo. If not, don't allow to create/join a game
+
                         break;
 
                     case 1:             // Index 1: Create Game
+
+                        // TODO: Check if user has a calibrated photo. If not, don't allow to create/join a game
+
                         intent = new Intent(MainActivity.this, CreateGameActivity.class);
                         startActivity(intent);
                         break;
