@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference userRef = database.getReference("Users/" + id);
         userRef.child("name").setValue(name);
 
-        userRef.child("games").addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.child("games").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) {
@@ -239,11 +239,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent;
                 switch (position) {
                     case 0:             // Index 0: Join Game
-//                        intent = new Intent(MainActivity.this, JoinGameActivity.class);
-//                        startActivity(intent);
-
                         // TODO: Check if user has a calibrated photo. If not, don't allow to create/join a game
-
+                        intent = new Intent(MainActivity.this, JoinGameActivity.class);
+                        startActivity(intent);
                         break;
 
                     case 1:             // Index 1: Create Game

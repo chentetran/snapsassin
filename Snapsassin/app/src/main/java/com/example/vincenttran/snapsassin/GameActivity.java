@@ -298,8 +298,9 @@ public class GameActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                if (result.get(0) == null) {
-                                    Toast.makeText(context, "No faces detected", Toast.LENGTH_SHORT).show();
+                                if (result.size() == 0 || result.get(0) == null) {
+                                    Toast.makeText(context, "Target was not found in the photo", Toast.LENGTH_SHORT).show();
+                                    return;
                                 }
 
 
