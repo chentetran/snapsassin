@@ -109,21 +109,25 @@ public class GameActivity extends AppCompatActivity {
                 RelativeLayout yourTargetLayout = (RelativeLayout) findViewById(R.id.yourTargetLayout);
 
                 switch (status){
-                    case "0":
+                    case "0":           // Waiting
                         readyBar.setVisibility(View.VISIBLE);
                         playersReadyView.setVisibility(View.VISIBLE);
                         break;
-                    case "1":
+                    case "1":           // Ready
                         break;
-                    case "3":
+                    case "3":           // Dead
                         yourTargetLayout.setVisibility(View.GONE);
                         break;
-                    default:
-                        yourTargetLayout.setVisibility(View.VISIBLE);
+                    default:            // Alive
                         targetID = dataSnapshot.child("players/" + id + "/target").getValue().toString();
                         String targetName = dataSnapshot.child("players/" + targetID + "/name").getValue().toString();
 
-                        targetTextView.setText(targetName);
+                        // If you are your own target, you've won the game.
+                        if (!id.equals(targetID)) {
+                            yourTargetLayout.setVisibility(View.VISIBLE);
+                            targetTextView.setText(targetName);
+                        }
+
 
                         int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
                         String numAlive = String.valueOf(numPlayers - numDead);
@@ -211,7 +215,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void readyButton(View view) {
-
         Ion.with(this)
                 .load("http://snap2016.herokuapp.com/vote")
                 .setBodyParameter("userID", id)
@@ -262,10 +265,6 @@ public class GameActivity extends AppCompatActivity {
                     // TODO: store in games
 
                     attemptAssassination(downloadUrl.toString());
-
-
-
-
                 }
             });
         }
@@ -274,6 +273,8 @@ public class GameActivity extends AppCompatActivity {
     private void attemptAssassination(String url) {
         final String mUrl = url;
         final Context context = this;
+
+        Log.d("IMPORTANT", targetID);
 
         database.getReference("Users/" + targetID + "/personId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -341,8 +342,6 @@ public class GameActivity extends AppCompatActivity {
                 // STUB
             }
         });
-
-//        assassinationSuccessful();
     }
 
     public void dispatchTakePictureIntent(View view) {
