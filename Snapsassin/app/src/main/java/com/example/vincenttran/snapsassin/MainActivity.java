@@ -2,6 +2,7 @@ package com.example.vincenttran.snapsassin;
 
 import android.*;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -51,6 +52,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -247,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
                     case 1:             // Index 1: Create Game
 
                         // TODO: Check if user has a calibrated photo. If not, don't allow to create/join a game
-
                         intent = new Intent(MainActivity.this, CreateGameActivity.class);
                         startActivity(intent);
                         break;
@@ -289,6 +292,9 @@ public class MainActivity extends AppCompatActivity {
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, bytes);
             byte[] imageBytes = bytes.toByteArray();
 //            String imageFile = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+            final Context context = this;
+
             // upload to firebase
             StorageReference img_name = storage_root.child("Users/" + id + "/calibration.jpg");
             UploadTask uploadTask = img_name.putBytes(imageBytes);
@@ -301,84 +307,31 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    // todo: upload to microsoft face
-//                    Toast.makeText(MainActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
+
                     String url = downloadUrl.toString();
 
-                    Log.d("LINK", url);
+                    // Get url to photo, give url to server
+                    Ion.with(context)
+                            .load("http://polysnap.herokuapp.com/calibrate")
+                            .setBodyParameter("userID", id)
+                            .setBodyParameter("imgUrl", url)
+                            .asJsonObject()
+                            .setCallback(new FutureCallback<JsonObject>() {
+                                @Override
+                                public void onCompleted(Exception e, JsonObject result) {
+                                    int status = result.get("status").getAsInt();
 
-                    database.getReference("Users/" + id + "/photoUrl").setValue(url);
-
-                    attachPhoto(url);
-
-
+                                    if (status == 200) {
+                                        Toast.makeText(context, "Face calibration successful", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else if (status == 201) {
+                                        Toast.makeText(context, result.get("error").getAsString(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                 }
             });
         }
-    }
-
-    private void attachPhoto(String url) {
-        DatabaseReference userRef = database.getReference("Users/" + id);
-
-        final String mUrl = url;
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String personId = dataSnapshot.child("personId").getValue().toString();
-
-                Toast.makeText(MainActivity.this, mUrl + "\n" + personId, Toast.LENGTH_SHORT).show();
-
-                RequestQueue RQ = Volley.newRequestQueue(MainActivity.this);
-                JSONObject obj = new JSONObject();
-                try {
-                    obj = new JSONObject("{\"url\":" + "\"" + mUrl.replace("{personId}", personId) + "\"}");
-                } catch (JSONException e) {
-                    Toast.makeText(MainActivity.this, e.toString(),
-                            Toast.LENGTH_SHORT).show();
-                }
-
-                Toast.makeText(MainActivity.this, getResources().getString(R.string.add_face_url).replace("{personId}", personId), Toast.LENGTH_LONG).show();
-                JsonObjectRequest rq = new JsonObjectRequest(Request.Method.POST,
-                        getResources().getString(R.string.add_face_url).replace("{personId}", personId),
-                        obj,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                // Nothing to do. We don't use the persistedFaceId now
-                                Toast.makeText(MainActivity.this, "Photo uploaded", Toast.LENGTH_SHORT).show();
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError e) {
-                                int status = e.networkResponse.statusCode;
-                                NetworkResponse res = e.networkResponse;
-
-                                Toast.makeText(MainActivity.this, status + "\n" + new String(res.data),
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }
-                ) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put(getResources().getString(R.string.sub_id_key),
-                                getResources().getString(R.string.sub_id));
-                        return headers;
-                    }
-                };
-                RQ.add(rq);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this,
-                        "Unfortunately something has broken. You weren't in the database!",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
     public void dispatchTakePictureIntent() {
@@ -386,60 +339,6 @@ public class MainActivity extends AppCompatActivity {
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
-    }
-
-    private void createPerson(String name) {
-        RequestQueue RQ = Volley.newRequestQueue(this);
-        JSONObject request_body = new JSONObject();
-        try {
-            // TODO - Get name from somewhere
-            request_body = new JSONObject("{\"name\": \"" + name + "\"}");
-        } catch (JSONException e) {
-            Toast.makeText(MainActivity.this, "Failed to create person: Invalid name",
-                    Toast.LENGTH_SHORT);
-        }
-
-        final String mName = name;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
-                getResources().getString(R.string.create_person_url),
-                request_body,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        String microsoft_name = "";
-                        try {
-                            microsoft_name = response.getString("personId");
-                        } catch (JSONException e) {
-                            Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                        Toast.makeText(MainActivity.this, "Player " + microsoft_name + " created", Toast.LENGTH_SHORT).show();
-
-                        // This needs to be Users/<UID>/personId, but we just don't have that yet
-                        // Store playerId into Firebase
-                        DatabaseReference playerid = database.getReference("Users/" + id + "/personId");
-                        playerid.setValue(microsoft_name);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        int statusCode = error.networkResponse.statusCode;
-                        NetworkResponse res = error.networkResponse;
-
-                        Log.d("Request error",
-                                "Error (" + statusCode + "): " + new String(res.data));
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put(getResources().getString(R.string.sub_id_key),
-                        getResources().getString(R.string.sub_id));
-
-                return params;
-            }
-        };
-        RQ.add(request);
     }
 
     /**
