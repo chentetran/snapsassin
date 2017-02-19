@@ -99,49 +99,18 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
 
-
         SharedPreferences prefs = getSharedPreferences("SnapsassinPrefs", MODE_PRIVATE);
         id = prefs.getString("id", "No ID Error");
         final String name = prefs.getString("name", "No name error");
 
-//        final DatabaseReference gameRef = database.getReference("Games/-Kl32asdbfa9hnfa/");
-//        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (!dataSnapshot.child("players/" + id).exists()) { // User doesn't exist (in the game)
-//                    // hardcoded. fix later
-//                    DatabaseReference userRef = database.getReference("Users/" + id);
-//
-//                    userRef.child("games").child("-Kl32asdbfa9hnfa").setValue("Polyhack");
-//                    userRef.child("name").setValue(name);
-//
-//
-//                    gameRef.child("players/" + id + "/status").setValue("0");
-//                    gameRef.child("players/" + id + "/name").setValue(name);
-//                    int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
-//                    numPlayers++;
-//                    gameRef.child("numPlayers").setValue(numPlayers);
-//
-//
-//                    // Create a person on Microsoft Face
-//                    createPerson(name); // TODO: ADD THIS LINE BACK IN SOMEWHERE WHEN YOU REMOVE THIS CHUNK OF CODE
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
         DatabaseReference userRef = database.getReference("Users/" + id);
-        userRef.child("name").setValue(name);
 
         userRef.child("games").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) {
                     // TODO: display no games found
+                    return;
                 }
 
                 final ListView listView = (ListView) findViewById(R.id.gamesList);
@@ -179,8 +148,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        /******************/
-
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.

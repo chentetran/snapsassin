@@ -260,7 +260,6 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    // todo: upload to microsoft face
                     Toast.makeText(GameActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
                     // TODO: store in games
 
@@ -271,77 +270,31 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void attemptAssassination(String url) {
-        final String mUrl = url;
-        final Context context = this;
+        Ion.with(this)
+                .load("http://polysnap.herokuapp.com/assassinate")
+                .setBodyParameter("imgUrl", url)
+                .setBodyParameter("userID", id)
+                .setBodyParameter("gameKey", key)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        int status = result.get("status").getAsInt();
 
-        Log.d("IMPORTANT", targetID);
+                        switch (status) {
+                            case 202:
+                                Toast.makeText(GameActivity.this, "You won!", Toast.LENGTH_SHORT).show();
+                                break;
 
-        database.getReference("Users/" + targetID + "/personId").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final String targetPersonId = dataSnapshot.getValue().toString();
-                Toast.makeText(GameActivity.this, targetPersonId, Toast.LENGTH_SHORT).show();
+                            case 200:
+                                Toast.makeText(GameActivity.this, "Assassination successful!", Toast.LENGTH_SHORT).show();
+                                break;
 
-                JsonObject json = new JsonObject();
-                json.addProperty("url", mUrl);
-
-                Ion.with(context)
-                        .load(getResources().getString(R.string.detect_face_url))
-                        .setHeader(getResources().getString(R.string.sub_id_key),
-                                getResources().getString(R.string.sub_id))
-                        .setJsonObjectBody(json)
-                        .asJsonArray()
-                        .setCallback(new FutureCallback<JsonArray>() {
-                            @Override
-                            public void onCompleted(Exception e, JsonArray result) {
-                                if (e != null) {
-                                    // TODO:
-                                    return;
-                                }
-
-                                if (result.size() == 0 || result.get(0) == null) {
-                                    Toast.makeText(context, "Target was not found in the photo", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-
-
-                                String faceId = result.get(0).getAsJsonObject().get("faceId").getAsString();
-
-                                JsonObject json2 = new JsonObject();
-                                json2.addProperty("faceId", faceId);
-                                json2.addProperty("personId", targetPersonId);
-                                json2.addProperty("personGroupId", "snapsassin");
-
-                                Ion.with(context)
-                                        .load(getResources().getString(R.string.verify_face_identity_url))
-                                        .setHeader(getResources().getString(R.string.sub_id_key),
-                                                getResources().getString(R.string.sub_id))
-                                        .setJsonObjectBody(json2)
-                                        .asJsonObject()
-                                        .setCallback(new FutureCallback<JsonObject>() {
-                                            @Override
-                                            public void onCompleted(Exception e, JsonObject result) {
-                                                if (e != null) {
-                                                    return;
-                                                }
-
-                                                if (result.get("isIdentical").getAsBoolean()) {
-                                                    assassinationSuccessful();
-                                                }
-                                                else {
-                                                    Toast.makeText(GameActivity.this, "You missed!", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                            }
-                        });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // STUB
-            }
-        });
+                            case 201:
+                                Toast.makeText(GameActivity.this, result.get("error").getAsString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     public void dispatchTakePictureIntent(View view) {
@@ -349,40 +302,5 @@ public class GameActivity extends AppCompatActivity {
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
-    }
-
-    private void assassinationSuccessful() {
-        gamesRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Increment numDead
-                int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
-                numDead++;
-                Toast.makeText(GameActivity.this, String.valueOf(numDead), Toast.LENGTH_SHORT).show();
-                gamesRef.child(key + "/numDead").setValue(numDead);
-
-                // Change victim's status code
-                gamesRef.child(key + "/players/" + targetID + "/status").setValue("3");
-
-                // Assign victim's target to yourself
-                String newTargetID = dataSnapshot.child("players/" + targetID + "/target").getValue().toString();
-                gamesRef.child(key + "/players/" + id + "/target").setValue(newTargetID);
-
-                // Remove victim's target
-//                gamesRef.child(key + "/players/" + targetID + "/target").setValue("None (You're Dead).");
-
-                int numPlayers = Integer.parseInt(dataSnapshot.child("numPlayers").getValue().toString());
-                if (numPlayers - numDead == 1) {
-                    // You won!
-                    gamesRef.child(key + "/players/" + id + "/status").setValue("4");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
     }
 }
