@@ -20,6 +20,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,9 +75,8 @@ public class JoinGameActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        setTitle("Create a Game");
+        setTitle("Join a Game");
         toolbar.setTitleTextColor(Color.WHITE);
-//        toolbar.setTitle("Create a Game");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -90,83 +92,41 @@ public class JoinGameActivity extends AppCompatActivity {
         // Get gameName from EditText
         final String gameNameString = gameName.getText().toString();
 
-        // Create new item in database Games route
-        DatabaseReference gameRef = database.getReference("Games");
-        gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if (gameNameString.equals(String.valueOf(child.child("gameName").getValue()))) { // Game found!
-                        String key = child.getKey();
-                        DatabaseReference gameToJoinRef = child.getRef();
 
-                        // Increment numPlayers count
-                        int numPlayers = Integer.parseInt(child.child("numPlayers").getValue().toString());
-                        gameToJoinRef.child("numPlayers").setValue(numPlayers + 1);
+        Ion.with(this)
+                .load("http://polysnap.herokuapp.com/joinGame")
+                .setBodyParameter("userID", id)
+                .setBodyParameter("gameName", gameNameString)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        if (e != null) {
+                            // TODO: something went wrong
+                            return;
+                        }
+                        int status = result.get("status").getAsInt();
 
-                        // Add player to game's players child
-                        Map<String, String> newPlayerObj = new HashMap<>();
-                        newPlayerObj.put("name", name);
-                        newPlayerObj.put("status", "0");
-                        gameToJoinRef.child("players").child(id).setValue(newPlayerObj);
+                        switch (status) {
+                            case 401:           // No game with that name found
+                                Toast.makeText(JoinGameActivity.this, "No game called " + gameNameString + " was found", Toast.LENGTH_SHORT).show();
+                                finish();
+                                break;
+                            case 200:
+                                String key = result.get("gameKey").getAsString();
 
-                        // Add game to user's "games" child
-                        DatabaseReference userRef = database.getReference("Users/" + id);
-                        userRef.child("games/" + key).setValue(gameNameString);
+                                // Go to this new game's GameActivity
+                                Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
+                                intent.putExtra("gameTitle", gameNameString);
+                                intent.putExtra("gameKey", key);
+                                startActivity(intent);
+                                finish();
+                                break;
+                            default:
+                                Toast.makeText(JoinGameActivity.this, "There's been an error", Toast.LENGTH_SHORT).show();
+                        }
 
-                        // Go to this new game's GameActivity
-                        Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
-                        intent.putExtra("gameTitle", gameNameString);
-                        intent.putExtra("gameKey", key);
-                        startActivity(intent);
-                        finish();
-                        return;
                     }
-                }
-
-                // No game of that name was found
-                Toast.makeText(JoinGameActivity.this, "No game called " + gameNameString + " was found", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-        //
-//
-//        Map<String, Integer> newGameObj = new HashMap<>();
-//        // Set the count of players, etc.
-//        newGameObj.put("numDead", 0);
-//        newGameObj.put("numPlayers", 1);
-//        newGameObj.put("numReady", 0);
-//        newGameRef = database.getReference("Games").push();
-//        newGameRef.setValue(newGameObj);
-//        newGameRef.child("gameName").setValue(gameNameString);      // Set the name
-//
-//        String key = newGameRef.getKey();
-//
-//        // Add user to players list of game entry in the db
-//        Map<String, String> playersObj = new HashMap<>();
-//        playersObj.put("name", name);
-//        playersObj.put("status", "0");
-//        newGameRef.child("players").child(id).setValue(playersObj);
-//
-//        // Add game to user's "games" child
-//        DatabaseReference userRef = database.getReference("Users/" + id);
-//        userRef.child("games/" + key).setValue(gameNameString);
-//
-//        // Go to this new game's GameActivity
-//        Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
-//        intent.putExtra("gameTitle", gameNameString);
-//        intent.putExtra("gameKey", key);
-//        startActivity(intent);
-//        finish();
-
-
+                });
     }
 }

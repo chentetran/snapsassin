@@ -216,7 +216,7 @@ public class GameActivity extends AppCompatActivity {
 
     public void readyButton(View view) {
         Ion.with(this)
-                .load("http://snap2016.herokuapp.com/vote")
+                .load("http://polysnap.herokuapp.com/vote")
                 .setBodyParameter("userID", id)
                 .setBodyParameter("gameID", key)
                 .asJsonObject()

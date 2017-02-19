@@ -1,5 +1,6 @@
 package com.example.vincenttran.snapsassin;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,9 +14,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,39 +88,39 @@ public class CreateGameActivity extends AppCompatActivity {
 
     public void submitButtonClick(View view) {
         // Get gameName from EditText
-        String gameNameString = gameName.getText().toString();
+        final String gameNameString = gameName.getText().toString();
+        final Context context = this;
 
-        // Create new item in database Games route
-        DatabaseReference newGameRef;
+        Ion.with(this)
+                .load("http://polysnap.herokuapp.com/createGame")
+                .setBodyParameter("userID", id)
+                .setBodyParameter("gameName", gameNameString)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        if (e != null) {
+                            // TODO: something went wrong
+                            return;
+                        }
+                        int status = result.get("status").getAsInt();
 
-        Map<String, Integer> newGameObj = new HashMap<>();
-        // Set the count of players, etc.
-        newGameObj.put("numDead", 0);
-        newGameObj.put("numPlayers", 1);
-        newGameObj.put("numReady", 0);
-        newGameRef = database.getReference("Games").push();
-        newGameRef.setValue(newGameObj);
-        newGameRef.child("gameName").setValue(gameNameString);      // Set the name
+                        switch (status) {
+                            case 200:
+                                String key = result.get("gameKey").getAsString();
 
-        String key = newGameRef.getKey();
+                                // Go to this new game's GameActivity
+                                Intent intent = new Intent(context, GameActivity.class);
+                                intent.putExtra("gameTitle", gameNameString);
+                                intent.putExtra("gameKey", key);
+                                startActivity(intent);
+                                finish();
+                                break;
+                            default:
+                                Toast.makeText(context, "There's been an error", Toast.LENGTH_SHORT).show();
+                        }
 
-        // Add user to players list of game entry in the db
-        Map<String, String> playersObj = new HashMap<>();
-        playersObj.put("name", name);
-        playersObj.put("status", "0");
-        newGameRef.child("players").child(id).setValue(playersObj);
-
-        // Add game to user's "games" child
-        DatabaseReference userRef = database.getReference("Users/" + id);
-        userRef.child("games/" + key).setValue(gameNameString);
-
-        // Go to this new game's GameActivity
-        Intent intent = new Intent(CreateGameActivity.this, GameActivity.class);
-        intent.putExtra("gameTitle", gameNameString);
-        intent.putExtra("gameKey", key);
-        startActivity(intent);
-        finish();
-
-
+                    }
+                });
     }
 }
