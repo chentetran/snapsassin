@@ -242,6 +242,10 @@ public class MainActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPref.edit();
                         editor.clear();
                         editor.apply();
+
+                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+
                         finish();
                         break;
                 }
