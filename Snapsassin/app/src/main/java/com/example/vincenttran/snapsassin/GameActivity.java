@@ -129,11 +129,11 @@ public class GameActivity extends AppCompatActivity {
                         }
 
 
-                        int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
-                        String numAlive = String.valueOf(numPlayers - numDead);
-
-                        playersInGameTextView.setText(numAlive + " / " + String.valueOf(numPlayers));
                 }
+                int numDead = Integer.parseInt(dataSnapshot.child("numDead").getValue().toString());
+                String numAlive = String.valueOf(numPlayers - numDead);
+
+                playersInGameTextView.setText(numAlive + " / " + String.valueOf(numPlayers));
 
                 // Get every player in game
                 final List<String> playerList = new ArrayList<String>();

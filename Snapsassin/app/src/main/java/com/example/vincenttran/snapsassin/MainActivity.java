@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         };
         drawerLayout.addDrawerListener(drawerToggle);
 
-        String[] drawerItems = {"Join a Game", "Create a Game", "Calibrate Face", "Log Out"};
+        String[] drawerItems = {"Join a Game", "Create a Game", "Calibrate Face", "Settings", "Log Out"};
 
         ArrayAdapter<String> navDrawerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, drawerItems);
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                             .setCallback(new FutureCallback<JsonObject>() {
                                 @Override
                                 public void onCompleted(Exception e, JsonObject result) {
+                                    Log.d("info", result.toString());
                                     int status = result.get("status").getAsInt();
 
                                     if (status == 200) {
