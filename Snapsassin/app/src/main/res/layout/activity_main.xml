@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:minHeight="?android:attr/actionBarSize"
         app:theme="@style/ToolbarColoredBackArrow"
-        android:background="?android:attr/colorPrimary"/>
+        android:background="?android:attr/colorPrimary"
+        android:elevation="6dp"/>
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"

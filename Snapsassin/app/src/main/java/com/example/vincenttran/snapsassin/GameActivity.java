@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -66,6 +67,11 @@ public class GameActivity extends AppCompatActivity {
     StorageReference storage_root;
     DatabaseReference gamesRef;
     static final int REQUEST_IMAGE_CAPTURE = 7331;
+    ViewPager pager;
+    ViewPagerAdapter adapter;
+    SlidingTabLayout tabs;
+    CharSequence Titles[]={"Feed","Info"};
+    int Numboftabs =2;
 
 
     @Override
@@ -202,7 +208,6 @@ public class GameActivity extends AppCompatActivity {
 
         setTitle(title);
         toolbar.setTitleTextColor(Color.WHITE);
-//        toolbar.setTitle(title);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

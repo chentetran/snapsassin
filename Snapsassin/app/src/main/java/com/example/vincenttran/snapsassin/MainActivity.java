@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        Intent intent = new Intent(MainActivity.this, GameActivityWithTabs.class);
                         intent.putExtra("gameTitle", (String) listView.getItemAtPosition(position));
                         intent.putExtra("gameKey", keyList.get(position));
                         startActivity(intent);
