@@ -63,15 +63,10 @@ public class GameActivity extends AppCompatActivity {
     private String title;
     private String targetID;
     private FirebaseDatabase database;
-    FirebaseStorage storage;
-    StorageReference storage_root;
-    DatabaseReference gamesRef;
+    private FirebaseStorage storage;
+    private  StorageReference storage_root;
+    private  DatabaseReference gamesRef;
     static final int REQUEST_IMAGE_CAPTURE = 7331;
-    ViewPager pager;
-    ViewPagerAdapter adapter;
-    SlidingTabLayout tabs;
-    CharSequence Titles[]={"Feed","Info"};
-    int Numboftabs =2;
 
 
     @Override

@@ -116,7 +116,7 @@ public class JoinGameActivity extends AppCompatActivity {
                                 String key = result.get("gameKey").getAsString();
 
                                 // Go to this new game's GameActivity
-                                Intent intent = new Intent(JoinGameActivity.this, GameActivity.class);
+                                Intent intent = new Intent(JoinGameActivity.this, GameActivityWithTabs.class);
                                 intent.putExtra("gameTitle", gameNameString);
                                 intent.putExtra("gameKey", key);
                                 startActivity(intent);

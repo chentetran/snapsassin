@@ -110,7 +110,7 @@ public class CreateGameActivity extends AppCompatActivity {
                                 String key = result.get("gameKey").getAsString();
 
                                 // Go to this new game's GameActivity
-                                Intent intent = new Intent(context, GameActivity.class);
+                                Intent intent = new Intent(context, GameActivityWithTabs.class);
                                 intent.putExtra("gameTitle", gameNameString);
                                 intent.putExtra("gameKey", key);
                                 startActivity(intent);
